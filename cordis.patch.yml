@@ -1,0 +1,11 @@
+- insert:
+    - id: task-done-notify
+      name: '@local/task-done-notify'
+      config:
+        serverchanKeyFile: ~/.dsh/secrets/serverchan-sendkey.txt
+        dingtalkWebhookFile: ~/.dsh/secrets/dingtalk-webhook.txt
+        dingtalkAtMobiles: []
+        dingtalkKeyword: 进度通知
+        enableServerchan: true
+        enableDingtalk: true
+        enableDws: false

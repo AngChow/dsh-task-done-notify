@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Task done notify",
+    "description": "Adds a bell toggle by the composer; when the armed session finishes its task, it pushes a WeChat (ServerChan) and DingTalk webhook notification. Also available as the /notify-when-done command."
+  }
+}
