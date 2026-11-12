@@ -1,6 +1,6 @@
 {
   "name": "task-done-notify",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "type": "module",
   "description": "Arm a session; when its turn finishes, push a WeChat (ServerChan) and DingTalk webhook notification.",
