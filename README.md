@@ -1,6 +1,6 @@
 # DSH 任务完成通知插件
 
-**@local/task-done-notify** — 一个 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 插件：在输入框工具行加一个铃铛开关，点亮后，**本轮任务完成时自动把通知推到你手机上**——跟 AI 说完任务就可以离开电脑，做完了它会叫你。
+**task-done-notify** — 一个 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 插件：在输入框工具行加一个铃铛开关，点亮后，**本轮任务完成时自动把通知推到你手机上**——跟 AI 说完任务就可以离开电脑，做完了它会叫你。
 
 支持三种通知方式，可在「设置 → 插件 → 任务完成通知」里分别开关、填写与测试：
 
@@ -12,18 +12,15 @@
 
 ## 界面
 
-输入框工具行左侧的铃铛就是开关——灰色「完成时通知我」表示没开，蓝色「已设完成通知」表示本轮结束会推送：
+输入框工具行左侧的铃铛就是开关——灰色「完成时通知我」表示没开，蓝色「已设完成通知」表示本轮结束会推送。
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/bell-idle.jpg" alt="铃铛未开启：完成时通知我"></td>
-    <td width="50%"><img src="docs/images/bell-armed.jpg" alt="铃铛已开启：已设完成通知"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>未开启：显示「完成时通知我」</sub></td>
-    <td align="center"><sub>已开启：蓝色「已设完成通知」，本轮结束即推送</sub></td>
-  </tr>
-</table>
+**未开启**：显示「完成时通知我」：
+
+![铃铛未开启](docs/images/bell-idle.jpg)
+
+**已开启**：变成蓝色「已设完成通知」，本轮结束即推送：
+
+![铃铛已开启](docs/images/bell-armed.jpg)
 
 ## 为什么做这个
 
@@ -54,7 +51,7 @@
 
 ### 安装插件
 
-克隆本仓库到任意目录，然后在 DSH 的 Plugin Manager（设置 → 插件）中从本地目录安装 `@local/task-done-notify`；或通过 DSH 的插件管理工具执行：
+克隆本仓库到任意目录，然后在 DSH 的 Plugin Manager（设置 → 插件）中从本地目录安装 `task-done-notify`；或通过 DSH 的插件管理工具执行：
 
 ```text
 install_bundle target=<本仓库的绝对路径>

@@ -1,6 +1,6 @@
 - insert:
     - id: task-done-notify
-      name: '@local/task-done-notify'
+      name: 'task-done-notify'
       config:
         serverchanKeyFile: ~/.dsh/secrets/serverchan-sendkey.txt
         dingtalkWebhookFile: ~/.dsh/secrets/dingtalk-webhook.txt
