@@ -4,19 +4,24 @@
   "private": true,
   "type": "module",
   "description": "Arm a session; when its turn finishes, push a WeChat (ServerChan) and DingTalk webhook notification.",
+  "main": "./lib/index.js",
   "exports": {
-    ".": "./index.js",
-    "./client": "./client.js",
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
   "files": [
-    "index.js",
-    "client.js",
+    "lib",
     "cordis.patch.yml",
+    "README.md",
     "locale/*.json",
     "icon.svg"
   ],
+  "scripts": {
+    "build": "node --check lib/index.js && node --check lib/client.js",
+    "prepack": "node --check lib/index.js && node --check lib/client.js"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

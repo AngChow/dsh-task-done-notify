@@ -10,6 +10,21 @@
 | **钉钉群（自定义机器人）** | 填了 Webhook 地址即可用 | 推到你指定的钉钉群，正文带安全关键词并 @ 你 |
 | **钉钉（dws 发给自己）** | `dws contact user get-self` 成功即已登录 | 用本机 `dws` CLI 以你的钉钉账号给自己发一条消息，无需任何地址配置 |
 
+## 界面
+
+输入框工具行左侧的铃铛就是开关——灰色「完成时通知我」表示没开，蓝色「已设完成通知」表示本轮结束会推送：
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/bell-idle.jpg" alt="铃铛未开启：完成时通知我"></td>
+    <td width="50%"><img src="docs/images/bell-armed.jpg" alt="铃铛已开启：已设完成通知"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>未开启：显示「完成时通知我」</sub></td>
+    <td align="center"><sub>已开启：蓝色「已设完成通知」，本轮结束即推送</sub></td>
+  </tr>
+</table>
+
 ## 为什么做这个
 
 长任务经常一跑十几分钟，人早就去别处了。DSH 桌面端的完成没有任何跨设备提醒，而实测发现：
