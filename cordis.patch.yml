@@ -9,3 +9,4 @@
         enableServerchan: true
         enableDingtalk: true
         enableDws: false
+        enableMacos: true

@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Task done notify",
-    "description": "Adds a bell toggle by the composer; when the armed session finishes its task, it pushes a WeChat (ServerChan) and DingTalk webhook notification. Also available as the /notify-when-done command."
+    "description": "Fires a native macOS notification banner in DSH's own name (whale icon) on every top-level turn completion, independent of the bell and toggleable in settings; arming the composer bell additionally pushes WeChat (ServerChan) and DingTalk notifications. Also available as the /notify-when-done command."
   }
 }

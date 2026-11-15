@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "任务完成通知",
-    "description": "在输入框工具行加一个铃铛开关；开启后本轮任务完成时自动推送微信(Server酱)与钉钉群通知。也可使用 /notify-when-done 命令。"
+    "description": "每轮任务结束自动以 DSH 名义弹 macOS 系统横幅（鲸鱼图标，独立于铃铛，可在设置关闭）；点亮输入框铃铛后还会额外推送微信(Server酱)与钉钉通知。也可使用 /notify-when-done 命令。"
   }
 }
