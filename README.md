@@ -9,7 +9,7 @@
 
 | 通知方式 | 触发 | 可用性判定 | 说明 |
 |---|---|---|---|
-| **macOS 常驻横幅** | 每轮自动（独立于铃铛） | DSH 桌面端（Electron） | 以 DSH 名义发的原生通知，鲸鱼图标，正文为会话标题 + 时间 |
+| **macOS 常驻横幅** | 每轮自动（独立于铃铛） | DSH 桌面端（Electron） | 以 DSH 名义发的原生通知，鲸鱼图标；标题=会话名，正文=本轮回复摘要 |
 | **微信（Server酱）** | 铃铛点亮 | 填了 SendKey 即可用 | 微信公众号推送，链路独立于钉钉，免费版每天 5 条 |
 | **钉钉群（自定义机器人）** | 铃铛点亮 | 填了 Webhook 地址即可用 | 推到你指定的钉钉群，正文带安全关键词并 @ 你 |
 | **钉钉（dws 发给自己）** | 铃铛点亮 | `dws contact user get-self` 成功即已登录 | 用本机 `dws` CLI 以你的钉钉账号给自己发一条消息，无需任何地址配置 |
@@ -44,7 +44,9 @@
 - 用的是 DSH 自己的通知权限，点击通知回到 DSH 窗口；
 - 不依赖任何外部工具（不需要 terminal-notifier / osascript）。
 
-**触发与防刷屏**：客户端订阅 Host 转发的 `api-session/status` 事件，某个会话从运行中（`running=true`）变为空闲（`running=false`）即一轮结束。只对 Host 会话列表里的**顶层会话**弹；子代理（`origin === 'subagent'`）回合不弹，避免一次任务里多个子代理收尾刷屏。横幅正文取会话的 `displayTitle`（持久标题，回退为项目名/短 id）+ 完成时间。
+**触发与防刷屏**：客户端订阅 Host 转发的 `api-session/status` 事件，某个会话从运行中（`running=true`）变为空闲（`running=false`）即一轮结束。只对 Host 会话列表里的**顶层会话**弹；子代理（`origin === 'subagent'`）回合不弹，避免一次任务里多个子代理收尾刷屏。
+
+**结合会话内容**：横幅不是固定文案——**标题是会话名**（`displayTitle`，持久标题，回退为项目名/短 id），**正文是本轮助手回复的内容摘要**。摘要取自 Host 的 `turnOutline` 投影末轮 `response`（已归一化、约 120 字封顶、排除工具结果与注入上下文）：客户端在回合结束后经一次本地 RPC `lastReply.get` 实时读取（`response` 在 `turn/end` 才落定，故不能在 `turn-stopping` 时取）。取不到回复时回退为「本轮已完成 · 时间」。
 
 **权限**：首次发通知时 macOS 会弹系统授权框，允许「DeepSeek Harness」通知即可（授一次永久有效）。插件也会在加载时主动申请一次。若被拒绝，到「系统设置 → 通知 → DeepSeek Harness」重新允许；专注模式（勿扰）开启时横幅会被系统静默。
 
@@ -52,7 +54,7 @@
 
 ## 功能
 
-- 🖥️ **macOS 常驻横幅（独立于铃铛，以 DSH 名义）**：每个顶层会话回合结束自动弹通知中心横幅，鲸鱼图标、正文为会话标题 + 时间；子代理回合不弹，避免刷屏。默认开启，可在设置页关闭或发测试；
+- 🖥️ **macOS 常驻横幅（独立于铃铛，以 DSH 名义）**：每个顶层会话回合结束自动弹通知中心横幅，鲸鱼图标；标题=会话名、正文=本轮回复摘要（结合会话内容，非固定文案）；子代理回合不弹，避免刷屏。默认开启，可在设置页关闭或发测试；
 - 🔔 **输入框工具行开关**（`conversation.input.left` 插槽）：点亮后 armed 态显示 DeepSeek 蓝（#4278EA，与发送按钮同色），用于额外的手机推送；
 - 💬 **`/notify-when-done [on | off | status]`** 命令面：与按钮等效，且 **agent 运行中可随时 arm**（斜杠命令不走模型队列，不打断正在进行的工作）；
 - 🎯 **一次性触发**：手机推送在本轮结束后自动熄灭，不反复打扰；macOS 横幅则每轮都弹；
@@ -106,7 +108,9 @@ install_bundle target=<本仓库的绝对路径>
 | 取消 | 再点一次按钮，或 `/notify-when-done off` | 立即熄灭 |
 | 查状态 | `/notify-when-done status` | 显示是否已开启，以及会用到哪些通道 |
 
-通知内容：标题「✅ DSH 任务完成」+ 会话标识 + 完成时间；钉钉群消息额外带 `【关键词】` 前缀并按配置 @ 手机号。
+通知内容：
+- **macOS 常驻横幅**：标题「✅ 会话名」，正文为本轮助手回复摘要（约 120 字）；无回复时回退「本轮已完成 · 时间」。
+- **手机推送（铃铛）**：标题「✅ DSH 任务完成」+ 会话标识 + 完成时间；钉钉群消息额外带 `【关键词】` 前缀并按配置 @ 手机号。
 
 ## 工作原理
 
@@ -146,6 +150,7 @@ macOS 通知中心：DeepSeek Harness + 鲸鱼图标
 - `agent/turn-stopping` 事件 — Host 侧「本轮收尾」信号，驱动铃铛 armed 的手机推送；
 - `ctx.remote.$on('api-session/status')` — Client 侧订阅 Host 转发的会话运行状态，`running` true→false 即回合结束，驱动常驻 macOS 横幅；
 - `ctx.sessions.list` — Client 会话列表快照，用 `ids` 判定顶层会话、用 `byId[].displayTitle/origin` 取标题并过滤子代理；
+- `ctx.sessionProjections.stateOf(session, 'turnOutline')` — Host 读末轮 `response` 预览作为横幅正文，经 RPC `lastReply.get` 提供给 Client；
 - 渲染进程 `Notification` API — 在 Electron 桌面端发原生通知，归属 DSH 应用（名字 + 鲸鱼图标）；
 - `commands.register` — 斜杠命令面；
 - `ctx.credentials` 凭据记录 — `task-done-notify/settings`，密钥与 macOS 开关都不落配置文件。
