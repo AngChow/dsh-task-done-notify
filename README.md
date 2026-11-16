@@ -4,7 +4,7 @@
 
 通知分两层，可在「设置 → 插件 → 任务完成通知」里分别开关与测试：
 
-- **macOS 常驻横幅（默认开启，独立于铃铛）**：只要插件装着且通道开着，每个顶层会话回合结束（✅）、以及出现 `ask_user_question` 提问 / 计划确认 / 审批卡片等你回答时（⏳），就弹一条系统通知中心横幅，**无需点亮铃铛**。通知**以 DSH 应用自身的名义发出**——名字「DeepSeek Harness」、鲸鱼图标，点击回到 DSH。详见[常驻通知](#常驻通知macos-横幅)。
+- **macOS 常驻横幅（默认开启，独立于铃铛）**：只要插件装着且通道开着，每个顶层会话回合结束（✅）、以及出现 `ask_user_question` 提问 / 计划确认 / 审批卡片等你回答时（⏳），就弹一条系统通知中心横幅，**无需点亮铃铛**。通知**以 DSH 应用自身的名义发出**——名字「DeepSeek Harness」、鲸鱼图标，**点击直达通知对应的会话**。详见[常驻通知](#常驻通知macos-横幅)。
 - **手机推送（铃铛点亮后生效）**：下面三种方式按铃铛触发，**任务完成**和**等待你选择**两种时刻都会推送；等待推送**不消耗铃铛**（不熄灭 armed），任务真正完成时仍会再推一次完成通知并熄灭。
 
 | 通知方式 | 触发 | 可用性判定 | 说明 |
@@ -41,7 +41,7 @@
 **以 DSH 的名义发**：macOS 通知的名字和图标取决于"哪个进程发的"。早期版本用 `osascript` 发，系统认它是"脚本编辑器"，图标换不掉。现在改为**在 DSH 桌面端（Electron）的渲染进程里调 `Notification` API**——通知由 DSH 应用自身发出，因此：
 
 - 名字是「DeepSeek Harness」，图标是 DSH 鲸鱼；
-- 用的是 DSH 自己的通知权限，点击通知回到 DSH 窗口；
+- 用的是 DSH 自己的通知权限，**点击通知不仅聚焦 DSH 窗口，还会自动切换到通知对应的会话**（经官方 `ctx.uiWorkspace.openSession(sessionId)` 导航面，与定时任务插件打开关联会话同款机制）；
 - 不依赖任何外部工具（不需要 terminal-notifier / osascript）。
 
 **触发与防刷屏**：客户端订阅 Host 转发的 `api-session/status` 事件，某个会话从运行中（`running=true`）变为空闲（`running=false`）即一轮结束。只对 Host 会话列表里的**顶层会话**弹；子代理（`origin === 'subagent'`）回合不弹，避免一次任务里多个子代理收尾刷屏。
@@ -162,6 +162,7 @@ macOS 通知中心（与完成横幅不同 tag，互不覆盖）
 - `agent/turn-stopping` 事件 — Host 侧「本轮收尾」信号，驱动铃铛 armed 的完成推送；
 - `user-questions/request` / `approval/request` waterfall — 提问与审批卡片到达的挂点；Host 以 `{global:true, prepend:true}` 注册**纯旁路观察者**（同步 `next()`，不改写不阻塞），驱动 armed 的「等待选择」手机推送，并向横幅待弹队列投递；Client 经 `waiting.poll` RPC 每 2s 取走队列弹 ⏳ 横幅（客户端 waterfall 只取第一个 settle，旁路观察不可靠，故不在 Client 挂）；
 - `ctx.remote.$on('api-session/status')` — Client 侧订阅 Host 转发的会话运行状态，`running` true→false 即回合结束，驱动常驻 ✅ 横幅；
+- `ctx.uiWorkspace.openSession(sessionId)` — 官方 UiWorkspace 导航面（schedule 插件打开关联会话同款用法），横幅点击时聚焦窗口并切换到通知对应的会话；
 - `ctx.sessions.list` — Client 会话列表快照，用 `ids` 判定顶层会话、用 `byId[].displayTitle/origin` 取标题并过滤子代理；
 - `ctx.sessionProjections.stateOf(session, 'turnOutline')` — Host 读末轮 `response` 预览作为横幅正文，经 RPC `lastReply.get` 提供给 Client；
 - 渲染进程 `Notification` API — 在 Electron 桌面端发原生通知，归属 DSH 应用（名字 + 鲸鱼图标）；
