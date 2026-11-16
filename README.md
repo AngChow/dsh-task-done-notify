@@ -46,7 +46,7 @@
 
 **触发与防刷屏**：客户端订阅 Host 转发的 `api-session/status` 事件，某个会话从运行中（`running=true`）变为空闲（`running=false`）即一轮结束。只对 Host 会话列表里的**顶层会话**弹；子代理（`origin === 'subagent'`）回合不弹，避免一次任务里多个子代理收尾刷屏。
 
-**等待选择也弹（v2.1）**：任务中途弹出 `ask_user_question` 提问、计划确认或审批卡片时，agent 仍在运行、回合并未结束——旧版此时不会有任何通知。现在 **Host 半区**以 `{ global: true, prepend: true }` 旁路观察 `user-questions/request` 与 `approval/request` 两个 waterfall（**同步 `next()` 放行，绝不拦截或改写官方卡片 UI**；必须 prepend——IM 类插件会抢先注册并挂起 `next()` 等待手机竞答，排它后面永远轮不到），检测到卡片后写入待弹队列；客户端每 2 秒经一次本地 RPC `waiting.poll` 取走队列，弹一条「⏳ 会话名 · 等待你的选择」横幅，正文是问题内容或待批准的操作。同一会话 30 秒内去重；等待横幅与完成横幅使用不同的通知 tag，互不覆盖。之所以不用客户端 waterfall 观察者：gateway 对每个转发请求只取第一个 settle 的监听器，且可能被其他消费者挂起，旁路观察在客户端不可靠。
+**等待选择也弹（v2.0.4）**：任务中途弹出 `ask_user_question` 提问、计划确认或审批卡片时，agent 仍在运行、回合并未结束——旧版此时不会有任何通知。现在 **Host 半区**以 `{ global: true, prepend: true }` 旁路观察 `user-questions/request` 与 `approval/request` 两个 waterfall（**同步 `next()` 放行，绝不拦截或改写官方卡片 UI**；必须 prepend——IM 类插件会抢先注册并挂起 `next()` 等待手机竞答，排它后面永远轮不到），检测到卡片后写入待弹队列；客户端每 2 秒经一次本地 RPC `waiting.poll` 取走队列，弹一条「⏳ 会话名 · 等待你的选择」横幅，正文是问题内容或待批准的操作。同一会话 30 秒内去重；等待横幅与完成横幅使用不同的通知 tag，互不覆盖。之所以不用客户端 waterfall 观察者：gateway 对每个转发请求只取第一个 settle 的监听器，且可能被其他消费者挂起，旁路观察在客户端不可靠。
 
 **结合会话内容**：横幅不是固定文案——**标题是会话名**（`displayTitle`，持久标题，回退为项目名/短 id），**正文是本轮助手回复的内容摘要**。摘要取自 Host 的 `turnOutline` 投影末轮 `response`（已归一化、约 120 字封顶、排除工具结果与注入上下文）：客户端在回合结束后经一次本地 RPC `lastReply.get` 实时读取（`response` 在 `turn/end` 才落定，故不能在 `turn-stopping` 时取）。取不到回复时回退为「本轮已完成 · 时间」。
 
