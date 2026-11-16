@@ -1,9 +1,9 @@
 {
   "name": "task-done-notify",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
-  "description": "Native macOS banner in DSH's own name (whale icon) on every top-level turn completion, showing the turn's reply summary; independent of the bell. Arm a session to also push WeChat (ServerChan) and DingTalk notifications.",
+  "description": "Native macOS banner in DSH's own name (whale icon) on every top-level turn completion AND whenever a question/approval card waits for the user, showing the reply summary or the pending question; independent of the bell. Arm a session to also push WeChat (ServerChan) and DingTalk notifications at both moments.",
   "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
