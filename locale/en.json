@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Task done notify",
-    "description": "Fires a native macOS notification banner in DSH's own name (whale icon) on every top-level turn completion AND whenever a question/approval card waits for your choice: completion shows the session title and reply summary, waiting shows ⏳ plus the pending question or operation; independent of the bell and toggleable in settings. Arming the composer bell additionally pushes WeChat (ServerChan) and DingTalk notifications at both moments (waiting pushes do not consume the bell). Also available as the /notify-when-done command."
+    "description": "Fires a native macOS notification banner in DSH's own name (whale icon) on every top-level turn completion AND whenever a question/approval card waits for your choice: completion shows the session title and reply summary, waiting shows ⏳ plus the pending question or operation; independent of the bell and toggleable via Configure on its Plugins page. Arming the composer bell additionally pushes WeChat (ServerChan) and DingTalk notifications at both moments (waiting pushes do not consume the bell). Also available as the /notify-when-done command."
   }
 }
